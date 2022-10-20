@@ -1,0 +1,44 @@
+From 83308443199dc0af7426fd3d8116de0bbed889af Mon Sep 17 00:00:00 2001
+From: Connor Peet <connor@peet.io>
+Date: Thu, 20 Oct 2022 12:29:00 -0700
+Subject: [PATCH] update top openssl 1.1.1q
+
+---
+ ports/openssl/portfile.cmake | 4 ++--
+ ports/openssl/vcpkg.json     | 2 +-
+ 2 files changed, 3 insertions(+), 3 deletions(-)
+
+diff --git a/ports/openssl/portfile.cmake b/ports/openssl/portfile.cmake
+index e94e7a83f..329218a85 100644
+--- a/ports/openssl/portfile.cmake
++++ b/ports/openssl/portfile.cmake
+@@ -2,12 +2,12 @@ if(EXISTS "${CURRENT_INSTALLED_DIR}/include/openssl/ssl.h")
+     message(FATAL_ERROR "Can't build openssl if libressl/boringssl is installed. Please remove libressl/boringssl, and try install openssl again if you need it.")
+ endif()
+ 
+-set(OPENSSL_VERSION 1.1.1n)
++set(OPENSSL_VERSION 1.1.1q)
+ vcpkg_download_distfile(
+     ARCHIVE
+     URLS "https://www.openssl.org/source/openssl-${OPENSSL_VERSION}.tar.gz" "https://www.openssl.org/source/old/1.1.1/openssl-${OPENSSL_VERSION}.tar.gz"
+     FILENAME "openssl-${OPENSSL_VERSION}.tar.gz"
+-    SHA512 1937796736613dcf4105a54e42ecb61f95a1cea74677156f9459aea0f2c95159359e766089632bf364ee6b0d28d661eb9957bce8fecc9d2436378d8d79e8d0a4
++    SHA512 cb9f184ec4974a3423ef59c8ec86b6bf523d5b887da2087ae58c217249da3246896fdd6966ee9c13aea9e6306783365239197e9f742c508a0e35e5744e3e085f
+ )
+ 
+ vcpkg_find_acquire_program(PERL)
+diff --git a/ports/openssl/vcpkg.json b/ports/openssl/vcpkg.json
+index beb580774..440832108 100644
+--- a/ports/openssl/vcpkg.json
++++ b/ports/openssl/vcpkg.json
+@@ -1,6 +1,6 @@
+ {
+   "name": "openssl",
+-  "version-string": "1.1.1n",
++  "version-string": "1.1.1q",
+   "port-version": 1,
+   "description": "OpenSSL is an open source project that provides a robust, commercial-grade, and full-featured toolkit for the Transport Layer Security (TLS) and Secure Sockets Layer (SSL) protocols. It is also a general-purpose cryptography library.",
+   "homepage": "https://www.openssl.org",
+-- 
+2.37.0 (Apple Git-136)
+

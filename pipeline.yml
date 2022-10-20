@@ -1,0 +1,94 @@
+parameters:
+  - name: release
+    type: boolean
+    displayName: Release this build?
+    default: true
+
+  - name: branchRef
+    type: string
+    displayName: Branch name or ref to build
+    default: vcpkg
+
+variables:
+  vcpkgCommit: 3b3bd424827a1f7f4813216f6b32b6c61e386b2e
+  linuxTargets:
+    - x64-osx
+    - arm64-osx
+    - x64-linux
+    - arm64-linux
+    - arm-linux
+  windowsTargets:
+    - x64-windows-static-md
+    - arm64-windows-static-md
+    - x86-windows-static-md
+
+stages:
+  - stage: Compile
+    dependsOn: []
+    jobs:
+      - job: Linux
+        pool: vscode-1es-linux
+        steps:
+          - script: |
+              set -e
+              git clone https://github.com/microsoft/vcpkg.git $(Build.ArtifactStagingDirectory)/vcpkg
+              cd $(Build.ArtifactStagingDirectory)/vcpkg && git checkout ${{ variables.vcpkgCommit }}
+              sh $(Build.ArtifactStagingDirectory)/vcpkg/bootstrap-vcpkg.sh
+            displayName: Bootstrap vcpkg
+
+          - script: node generate-ports $(Build.ArtifactStagingDirectory)/vcpkg $(Build.SourcesDirectory) $(Build.ArtifactStagingDirectory)/vcpkg-overlay
+            displayName: Generate port overlay
+
+          - ${{ each target in variables.linuxTargets }}:
+            - script: |
+                $(Build.SourcesDirectory)/vcpkg install --triplet=${{ target }} --overlay-ports=$(Build.ArtifactStagingDirectory)/vcpkg-overlay
+              displayName: Build ${{ target }}
+
+            - task: PublishBuildArtifacts@1
+              displayName: Publish ${{ target }}
+              inputs:
+                pathToPublish: $(Build.SourcesDirectory)/vcpkg_installed/${{ target }}
+                artifactName: ${{ target }}
+
+      - job: Windows
+        pool: vscode-1es-windows
+        steps:
+          - powershell: |
+              git clone https://github.com/microsoft/vcpkg.git $(Build.ArtifactStagingDirectory)/vcpkg
+              cd $(Build.ArtifactStagingDirectory)/vcpkg; git checkout ${{ variables.vcpkgCommit }}
+              $(Build.ArtifactStagingDirectory)/vcpkg/bootstrap-vcpkg.bat
+            displayName: Bootstrap vcpkg
+
+          - script: node generate-ports $(Build.ArtifactStagingDirectory)/vcpkg $(Build.SourcesDirectory) $(Build.ArtifactStagingDirectory)/vcpkg-overlay
+            displayName: Generate port overlay
+
+          - ${{ each target in variables.windowsTargets }}:
+            - powershell: |
+                $(Build.SourcesDirectory)/vcpkg.exe install --triplet=${{ target }} --overlay-ports=$(Build.ArtifactStagingDirectory)/vcpkg-overlay
+              displayName: Build ${{ target }}
+
+            - task: PublishBuildArtifacts@1
+              displayName: Publish ${{ target }}
+              inputs:
+                pathToPublish: $(Build.SourcesDirectory)/vcpkg_installed/${{ target }}
+                artifactName: ${{ target }}
+
+  - stage: Publish
+    condition: ${{ parameters.release }}
+    dependsOn: Compile
+    jobs:
+      - job: Publish
+        pool: vscode-1es-linux
+        steps:
+          - task: DownloadPipelineArtifact@2
+            path: $(Build.ArtifactStagingDirectory)
+            displayName: Download artifacts
+
+          - task: UniversalPackages@0
+            displayName: Universal Publish
+            inputs:
+              command: publish
+              publishDirectory: '$(Build.ArtifactStagingDirectory)'
+              vstsFeedPublish: 'Monaco/openssl'
+              vstsFeedPackagePublish: openssl
+              packagePublishDescription: OpenSSL libraries

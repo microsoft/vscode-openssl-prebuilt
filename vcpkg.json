@@ -1,0 +1,12 @@
+{
+	"name": "vscode-cli",
+	"version-string": "0.1.0",
+	"dependencies": ["openssl"],
+	"overrides": [
+		{
+			"name": "openssl",
+			"version-string": "1.1.1q"
+		}
+	],
+	"builtin-baseline": "83308443199dc0af7426fd3d8116de0bbed889af"
+}
