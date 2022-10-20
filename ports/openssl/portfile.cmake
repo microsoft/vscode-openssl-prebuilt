@@ -2,12 +2,12 @@ if(EXISTS "${CURRENT_INSTALLED_DIR}/include/openssl/ssl.h")
     message(FATAL_ERROR "Can't build openssl if libressl/boringssl is installed. Please remove libressl/boringssl, and try install openssl again if you need it.")
 endif()
 
-set(OPENSSL_VERSION 1.1.1n)
+set(OPENSSL_VERSION 1.1.1q)
 vcpkg_download_distfile(
     ARCHIVE
     URLS "https://www.openssl.org/source/openssl-${OPENSSL_VERSION}.tar.gz" "https://www.openssl.org/source/old/1.1.1/openssl-${OPENSSL_VERSION}.tar.gz"
     FILENAME "openssl-${OPENSSL_VERSION}.tar.gz"
-    SHA512 1937796736613dcf4105a54e42ecb61f95a1cea74677156f9459aea0f2c95159359e766089632bf364ee6b0d28d661eb9957bce8fecc9d2436378d8d79e8d0a4
+    SHA512 cb9f184ec4974a3423ef59c8ec86b6bf523d5b887da2087ae58c217249da3246896fdd6966ee9c13aea9e6306783365239197e9f742c508a0e35e5744e3e085f
 )
 
 vcpkg_find_acquire_program(PERL)
