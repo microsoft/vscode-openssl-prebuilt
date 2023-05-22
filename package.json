@@ -1,0 +1,19 @@
+{
+  "name": "@vscode/openssl-prebuilt",
+  "version": "0.0.5",
+  "description": "Prebuilt openssl libraries for platforms VS Code is published on",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/microsoft/vscode-openssl-prebuilt.git"
+  },
+  "author": "",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/microsoft/vscode-openssl-prebuilt/issues"
+  },
+  "homepage": "https://github.com/microsoft/vscode-openssl-prebuilt#readme"
+}
