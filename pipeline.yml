@@ -1,0 +1,44 @@
+name: $(Date:yyyyMMdd)$(Rev:.r)
+
+trigger: none
+pr: none
+
+resources:
+  repositories:
+    - repository: templates
+      type: github
+      name: microsoft/vscode-engineering
+      ref: main
+      endpoint: Monaco
+
+parameters:
+  - name: publishPackage
+    displayName: 🚀 Publish test-electron
+    type: boolean
+    default: false
+
+extends:
+  template: azure-pipelines/npm-package/pipeline.yml@templates
+  parameters:
+    npmPackages:
+      - name: openssl-prebuilt
+        publishPackage: ${{ parameters.publishPackage }}
+        testPlatforms: []
+        buildSteps:
+          - script: node -p "'##vso[task.setvariable variable=PKG_VERSION]' + require('./package.json').version"
+            displayName: Get version
+
+          - task: Npm@1
+            displayName: Download openssl prebuilt
+            inputs:
+              command: custom
+              customCommand: pack @vscode-internal/openssl-prebuilt@$(PKG_VERSION)
+              customRegistry: useFeed
+              customFeed: "Monaco/openssl-prebuilt"
+              workingDir: $(Build.ArtifactStagingDirectory)
+
+          - script: |
+              set -e
+              mkdir $(Build.SourcesDirectory)/out
+              tar -xvzf $(Build.ArtifactStagingDirectory)/vscode-internal-openssl-prebuilt-$(PKG_VERSION).tgz --strip-components=1 --directory=$(Build.SourcesDirectory)/out
+            displayName: Extract openssl prebuilt
