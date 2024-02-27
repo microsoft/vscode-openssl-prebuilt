@@ -37,8 +37,8 @@ extends:
               customFeed: "Monaco/openssl-prebuilt"
               workingDir: $(Build.ArtifactStagingDirectory)
 
-          - script: |
-              set -e
+          - pwsh: |
+              $ErrorActionPreference = 'Stop'
               mkdir $(Build.SourcesDirectory)/out
               tar -xvzf $(Build.ArtifactStagingDirectory)/vscode-internal-openssl-prebuilt-$(PKG_VERSION).tgz --strip-components=1 --directory=$(Build.SourcesDirectory)/out
             displayName: Extract openssl prebuilt
